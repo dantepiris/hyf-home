@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NidoStay — Alojamientos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:   #F9F5EE;
+  --warm:    #F2EBD9;
+  --clay:    #C17D4B;
+  --clay2:   #A0612E;
+  --ink:     #1C1610;
+  --charcoal:#3A3028;
+  --muted:   #9A8E80;
+  --border:  #E4D9C8;
+  --white:   #FFFFFF;
+  --host:    #C17D4B;
+  --guest:   #3B6E8C;
+  --guest2:  #2A5470;
+  --green:   #4A7C59;
+  --red:     #B85450;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════
+   NAVBAR
+═══════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center;
+  padding: 0 3rem;
+  height: 68px;
+  background: rgba(249,245,238,.92);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -.5px;
+  flex-shrink: 0;
+}
+.nav-logo span { color: var(--clay); }
+.nav-links {
+  display: flex; gap: 2.2rem;
+  margin-left: 3rem;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: .02em;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-right {
+  margin-left: auto;
+  display: flex; gap: .7rem; align-items: center;
+}
+.btn-ghost {
+  padding: .5rem 1.3rem;
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  background: transparent;
+  color: var(--charcoal);
+  font-family: 'Outfit', sans-serif;
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-ghost:hover { border-color: var(--clay); color: var(--clay); }
+.btn-primary {
+  padding: .5rem 1.5rem;
+  background: var(--clay);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.btn-primary:hover { background: var(--clay2); transform: translateY(-1px); }
+
+/* VIEW TOGGLE */
+.view-toggle {
+  display: flex;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: 3px;
+  gap: 2px;
+}
+.vt-btn {
+  padding: .3rem .9rem;
+  border-radius: 2rem;
+  border: none;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: .72rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--muted);
+  transition: all .2s;
+}
+.vt-btn.active { background: white; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+/* ═══════════════════════════════
+   HERO BANNER
+═══════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  padding-top: 68px;
+}
+
+/* Grain overlay */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, #E8C99A33 0%, transparent 60%),
+    radial-gradient(ellipse 50% 80% at 10% 80%, #C17D4B18 0%, transparent 55%),
+    linear-gradient(160deg, #F9F5EE 0%, #F2E8D5 50%, #EDD9B8 100%);
+}
+
+/* Decorative circles */
+.hero-deco {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.deco-1 {
+  width: 600px; height: 600px;
+  right: -100px; top: 50px;
+  border: 1px solid #C17D4B22;
+  animation: spin-slow 40s linear infinite;
+}
+.deco-2 {
+  width: 400px; height: 400px;
+  right: 50px; top: 150px;
+  border: 1px solid #C17D4B15;
+  animation: spin-slow 30s linear infinite reverse;
+}
+.deco-3 {
+  width: 180px; height: 180px;
+  right: 220px; top: 260px;
+  background: radial-gradient(circle, #C17D4B18, transparent);
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 3rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  min-height: calc(100vh - 68px);
+}
+
+.hero-left {}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: .3rem .9rem .3rem .5rem;
+  font-size: .72rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+  animation: fadeUp .6s ease both;
+}
+.tag-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.5; transform:scale(1.4); }
+}
+
+.hero-h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 5.5vw, 5.2rem);
+  font-weight: 600;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: var(--ink);
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--clay);
+}
+.hero-h1 .thin {
+  font-weight: 300;
+  display: block;
+}
+
+.hero-sub {
+  margin-top: 1.5rem;
+  font-size: .95rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 440px;
+  animation: fadeUp .6s .2s ease both;
+}
+
+/* SEARCH BOX */
+.search-box {
+  margin-top: 2.5rem;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 8px 40px rgba(193,125,75,.12);
+  animation: fadeUp .6s .3s ease both;
+}
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: .8rem;
+  align-items: end;
+}
+.search-field label {
+  display: block;
+  font-size: .65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: .35rem;
+}
+.search-field input, .search-field select {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+.search-field select option { background: white; }
+.search-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border);
+  align-self: center;
+}
+.search-btn {
+  background: var(--clay);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: .8rem 1.4rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; gap: .5rem;
+  white-space: nowrap;
+  transition: background .2s, transform .15s;
+}
+.search-btn:hover { background: var(--clay2); transform: translateY(-1px); }
+
+.search-tags {
+  display: flex; gap: .5rem;
+  margin-top: .9rem;
+  flex-wrap: wrap;
+}
+.stag {
+  font-size: .7rem;
+  color: var(--muted);
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: .2rem .7rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.stag:hover { border-color: var(--clay); color: var(--clay); }
+
+/* HERO RIGHT — Cards */
+.hero-right {
+  position: relative;
+  animation: fadeUp .6s .2s ease both;
+}
+.cards-float {
+  position: relative;
+  height: 480px;
+}
+.prop-card {
+  position: absolute;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(28,22,16,.12);
+  transition: transform .3s ease;
+}
+.prop-card:hover { transform: translateY(-6px) !important; }
+
+.pc-main {
+  width: 300px;
+  top: 30px; right: 20px;
+  animation: floatA 6s ease-in-out infinite;
+}
+.pc-small {
+  width: 220px;
+  bottom: 20px; left: 0;
+  animation: floatB 7s ease-in-out infinite;
+}
+@keyframes floatA { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes floatB { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+.pc-img {
+  width: 100%; height: 180px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #D4A574, #C17D4B, #8B5E3C);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+.pc-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.2));
+}
+.pc-img-s {
+  height: 120px;
+  background: linear-gradient(135deg, #7BA7BC, #3B6E8C, #2A5470);
+}
+.pc-body { padding: .9rem 1rem; }
+.pc-loc {
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: .25rem;
+}
+.pc-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.pc-price {
+  display: flex; align-items: baseline; gap: .3rem;
+  margin-top: .5rem;
+}
+.pc-price .amount {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--clay);
+}
+.pc-price .unit { font-size: .7rem; color: var(--muted); }
+.pc-stars { display: flex; gap: 2px; margin-top: .4rem; }
+.star { color: #E8C14B; font-size: .7rem; }
+.pc-badge {
+  position: absolute; top: 12px; left: 12px; z-index: 2;
+  background: white;
+  border-radius: 2rem;
+  padding: .2rem .6rem;
+  font-size: .62rem;
+  font-weight: 600;
+  color: var(--green);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+/* Floating stat badges */
+.stat-badge {
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  padding: .6rem .9rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  display: flex; align-items: center; gap: .6rem;
+  animation: floatB 5s ease-in-out infinite;
+}
+.sb-1 { top: 10px; left: 0; }
+.sb-2 { top: 200px; left: -10px; animation-delay: 1s; }
+.sb-icon { font-size: 1.2rem; }
+.sb-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.sb-label { font-size: .6rem; color: var(--muted); margin-top: 1px; }
+
+/* ═══════════════════════════════
+   ROLE SECTION
+═══════════════════════════════ */
+.roles-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 3rem;
+}
+
+.section-label {
+  text-align: center;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+  color: var(--muted);
+  margin-bottom: .8rem;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: .8rem;
+}
+.section-title em { font-style: italic; color: var(--clay); }
+.section-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: .9rem;
+  max-width: 500px;
+  margin: 0 auto 3.5rem;
+  line-height: 1.6;
+}
+
+/* ROLE CARDS */
+.roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.role-panel {
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  transition: box-shadow .3s, transform .3s;
+}
+.role-panel:hover {
+  box-shadow: 0 24px 70px rgba(0,0,0,.1);
+  transform: translateY(-4px);
+}
+
+.rp-header {
+  padding: 2.5rem 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.rp-header.host {
+  background: linear-gradient(140deg, #FDF0E4 0%, #F5DFC0 100%);
+}
+.rp-header.guest {
+  background: linear-gradient(140deg, #E4EEF5 0%, #C8DDE9 100%);
+}
+.rp-deco {
+  position: absolute;
+  font-size: 8rem;
+  opacity: .08;
+  bottom: -20px; right: -10px;
+  line-height: 1;
+  pointer-events: none;
+}
+.rp-icon-wrap {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.2rem;
+}
+.host .rp-icon-wrap { background: var(--clay); }
+.guest .rp-icon-wrap { background: var(--guest); }
+.rp-role-tag {
+  display: inline-block;
+  font-size: .65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: .25rem .7rem;
+  border-radius: 2rem;
+  margin-bottom: .8rem;
+}
+.host .rp-role-tag { background: #C17D4B22; color: var(--clay2); }
+.guest .rp-role-tag { background: #3B6E8C22; color: var(--guest2); }
+.rp-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.rp-desc {
+  font-size: .82rem;
+  color: var(--muted);
+  margin-top: .6rem;
+  line-height: 1.6;
+}
+
+.rp-body {
+  background: white;
+  padding: 2rem 2.5rem 2.5rem;
+}
+
+.feat-group-title {
+  font-size: .65rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 1.4rem 0 .8rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--border);
+}
+.feat-group-title:first-of-type { margin-top: 0; }
+
+.feat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  padding: .65rem 0;
+  border-bottom: 1px solid #F5F2EE;
+  transition: background .15s;
+  border-radius: 8px;
+  margin: 0 -.5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+.feat-row:hover { background: var(--cream); }
+.feat-row:last-child { border-bottom: none; }
+
+.fr-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+.host-icon { background: #FDF0E4; }
+.guest-icon { background: #E4EEF5; }
+
+.fr-content { flex: 1; }
+.fr-name { font-size: .85rem; font-weight: 500; color: var(--ink); }
+.fr-desc { font-size: .72rem; color: var(--muted); margin-top: .15rem; line-height: 1.4; }
+
+.fr-badge {
+  font-size: .6rem;
+  font-weight: 700;
+  padding: .18rem .55rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+  align-self: center;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.badge-live { background: #D1FAE5; color: #065F46; }
+.badge-soon { background: #FEF3C7; color: #92400E; }
+
+.rp-cta {
+  margin-top: 2rem;
+  width: 100%;
+  padding: .9rem;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .01em;
+}
+.cta-host {
+  background: var(--clay);
+  color: white;
+}
+.cta-host:hover { background: var(--clay2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(193,125,75,.35); }
+.cta-guest {
+  background: var(--guest);
+  color: white;
+}
+.cta-guest:hover { background: var(--guest2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,110,140,.35); }
+
+/* ═══════════════════════════════
+   STATS STRIP
+═══════════════════════════════ */
+.stats-strip {
+  background: var(--ink);
+  padding: 3.5rem 3rem;
+}
+.stats-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  text-align: center;
+}
+.stat-item {}
+.stat-n {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--clay);
+  line-height: 1;
+}
+.stat-t {
+  font-size: .75rem;
+  color: #7A6E62;
+  margin-top: .4rem;
+  letter-spacing: .05em;
+}
+
+/* ═══════════════════════════════
+   DASHBOARD MOCKUPS
+═══════════════════════════════ */
+.dash-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 3rem;
+}
+
+/* Dash toggle */
+.dash-toggle {
+  display: flex;
+  justify-content: center;
+  gap: .5rem;
+  margin-bottom: 3rem;
+}
+.dt-btn {
+  padding: .6rem 2rem;
+  border-radius: 2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .25s;
+}
+.dt-host {
+  background: var(--warm);
+  color: var(--muted);
+  border-color: var(--border);
+}
+.dt-host.active { background: var(--clay); color: white; border-color: var(--clay); }
+.dt-guest {
+  background: var(--warm);
+  color: var(--muted);
+  border-color: var(--border);
+}
+.dt-guest.active { background: var(--guest); color: white; border-color: var(--guest); }
+
+.dash-view { display: none; }
+.dash-view.active { display: block; animation: fadeUp .4s ease both; }
+
+/* Dashboard shell */
+.dash-shell {
+  background: #F4F1EC;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.08);
+}
+.dash-topbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: .9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.dot-w { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #FF5F57; }
+.dot-y { background: #FEBC2E; }
+.dot-g { background: #28C840; }
+.dash-title-bar {
+  margin-left: .5rem;
+  font-size: .78rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.dash-inner {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 520px;
+}
+
+/* SIDEBAR */
+.dash-sidebar {
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+}
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .7rem .8rem;
+  border-radius: 10px;
+  background: var(--cream);
+  margin-bottom: 1.5rem;
+}
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+.av-host { background: linear-gradient(135deg, #C17D4B, #A0612E); }
+.av-guest { background: linear-gradient(135deg, #3B6E8C, #2A5470); }
+.sidebar-name { font-size: .8rem; font-weight: 600; color: var(--ink); }
+.sidebar-role {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  font-size: .78rem;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: all .2s;
+}
+.nav-item:hover { background: var(--cream); color: var(--ink); }
+.nav-item.active { background: var(--cream); color: var(--ink); font-weight: 600; }
+.nav-item.active.host-active { color: var(--clay); }
+.nav-item.active.guest-active { color: var(--guest); }
+.ni-icon { font-size: .9rem; }
+.nav-sep {
+  height: 1px;
+  background: var(--border);
+  margin: .8rem 0;
+}
+.notif-dot {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: .55rem;
+  font-weight: 700;
+  border-radius: 2rem;
+  padding: .1rem .4rem;
+}
+
+/* MAIN CONTENT */
+.dash-main { padding: 1.8rem; overflow: hidden; }
+.dash-greeting {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -.3px;
+  margin-bottom: .3rem;
+}
+.dash-greeting em { font-style: italic; color: var(--clay); }
+.dash-greeting-g em { color: var(--guest); }
+.dash-sub { font-size: .78rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+/* KPI CARDS */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.kpi-card {
+  background: white;
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--border);
+}
+.kpi-icon { font-size: 1.1rem; margin-bottom: .5rem; }
+.kpi-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+.kpi-label { font-size: .65rem; color: var(--muted); margin-top: .3rem; text-transform: uppercase; letter-spacing: .06em; }
+.kpi-trend {
+  font-size: .65rem;
+  font-weight: 600;
+  margin-top: .4rem;
+}
+.trend-up { color: var(--green); }
+.trend-dn { color: var(--red); }
+
+/* TABLE */
+.dash-table-wrap {
+  background: white;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.table-head {
+  padding: .9rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.table-head-title {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.table-head-action {
+  font-size: .68rem;
+  color: var(--clay);
+  cursor: pointer;
+  font-weight: 500;
+}
+.t-row {
+  display: grid;
+  padding: .7rem 1.2rem;
+  border-bottom: 1px solid #F5F2EE;
+  align-items: center;
+  font-size: .75rem;
+  color: var(--charcoal);
+  transition: background .15s;
+  cursor: default;
+}
+.t-row:hover { background: var(--cream); }
+.t-row:last-child { border-bottom: none; }
+.host-table-row { grid-template-columns: 2fr 1fr 1fr 1fr 90px; }
+.guest-table-row { grid-template-columns: 2fr 1.5fr 1fr 90px; }
+.t-header { color: var(--muted); font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.t-header:hover { background: transparent; }
+.status-pill {
+  display: inline-block;
+  font-size: .62rem;
+  font-weight: 700;
+  padding: .2rem .6rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.pill-green { background: #D1FAE5; color: #065F46; }
+.pill-yellow { background: #FEF3C7; color: #92400E; }
+.pill-blue { background: #DBEAFE; color: #1E40AF; }
+.pill-red { background: #FEE2E2; color: #991B1B; }
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer {
+  background: var(--ink);
+  color: #5A5048;
+  padding: 3rem;
+  text-align: center;
+}
+footer .logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #7A6E62;
+  letter-spacing: -.3px;
+}
+footer .logo span { color: var(--clay); }
+footer p { font-size: .75rem; margin-top: .5rem; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero-content { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
+  .hero-right { display: none; }
+  .roles-grid { grid-template-columns: 1fr; }
+  .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  .dash-inner { grid-template-columns: 1fr; }
+  .dash-sidebar { display: none; }
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .search-row { grid-template-columns: 1fr 1fr; }
+  .roles-section, .dash-section { padding: 3rem 1.5rem; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ NAVBAR ════ -->
+<nav>
+  <div class="nav-logo">Nido<span>Stay</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Explorar</a></li>
+    <li><a href="#">Publicar</a></li>
+    <li><a href="#">Cómo funciona</a></li>
+    <li><a href="#">Soporte</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="view-toggle">
+      <button class="vt-btn active" onclick="setRole('guest',this)">🧳 Huésped</button>
+      <button class="vt-btn" onclick="setRole('host',this)">🏠 Anfitrión</button>
+    </div>
+    <button class="btn-ghost">Ingresar</button>
+    <button class="btn-primary">Registrarse</button>
+  </div>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-deco deco-1"></div>
+  <div class="hero-deco deco-2"></div>
+  <div class="hero-deco deco-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-tag">
+        <div class="tag-dot"></div>
+        +2.400 alojamientos disponibles hoy
+      </div>
+      <h1 class="hero-h1">
+        Encontrá tu<br>
+        <em>lugar ideal</em>
+        <span class="thin">en Argentina</span>
+      </h1>
+      <p class="hero-sub">
+        Casas y departamentos únicos, con anfitriones reales. Desde escapadas de fin de semana hasta estadías largas, tu próximo hogar te espera.
+      </p>
+
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-field">
+            <label>Destino</label>
+            <input type="text" placeholder="Ciudad o barrio…">
+          </div>
+          <div class="search-field">
+            <label>Entrada</label>
+            <input type="text" placeholder="¿Cuándo llegás?">
+          </div>
+          <div class="search-field">
+            <label>Huéspedes</label>
+            <select>
+              <option>1 huésped</option>
+              <option>2 huéspedes</option>
+              <option>3–4 huéspedes</option>
+              <option>+5 huéspedes</option>
+            </select>
+          </div>
+          <button class="search-btn">
+            <span>🔍</span> Buscar
+          </button>
+        </div>
+        <div class="search-tags">
+          <span class="stag">🏖️ Mar del Plata</span>
+          <span class="stag">⛰️ Bariloche</span>
+          <span class="stag">🍷 Mendoza</span>
+          <span class="stag">🌿 Córdoba</span>
+          <span class="stag">🏙️ Buenos Aires</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="cards-float">
+
+        <!-- Stat badges -->
+        <div class="stat-badge sb-1">
+          <span class="sb-icon">⭐</span>
+          <div>
+            <div class="sb-val">4.9</div>
+            <div class="sb-label">Rating promedio</div>
+          </div>
+        </div>
+        <div class="stat-badge sb-2">
+          <span class="sb-icon">✅</span>
+          <div>
+            <div class="sb-val">98%</div>
+            <div class="sb-label">Confirmación inmediata</div>
+          </div>
+        </div>
+
+        <!-- Main card -->
+        <div class="prop-card pc-main">
+          <div class="pc-img">
+            <div class="pc-badge">Disponible</div>
+            🏡
+          </div>
+          <div class="pc-body">
+            <div class="pc-loc">Palermo, Buenos Aires</div>
+            <div class="pc-name">Departamento luminoso<br>con terraza</div>
+            <div class="pc-price">
+              <span class="amount">$85</span>
+              <span class="unit">USD / noche</span>
+            </div>
+            <div class="pc-stars">
+              <span class="star">★</span><span class="star">★</span>
+              <span class="star">★</span><span class="star">★</span>
+              <span class="star">★</span>
+              <span style="font-size:.65rem;color:var(--muted);margin-left:.3rem">(42 reseñas)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Small card -->
+        <div class="prop-card pc-small">
+          <div class="pc-img pc-img-s">🌊</div>
+          <div class="pc-body">
+            <div class="pc-loc">Mar del Plata</div>
+            <div class="pc-name">Casa frente al mar</div>
+            <div class="pc-price">
+              <span class="amount">$120</span>
+              <span class="unit">USD / noche</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ STATS STRIP ════ -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-n">2.4k+</div>
+      <div class="stat-t">Alojamientos activos</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">840+</div>
+      <div class="stat-t">Anfitriones verificados</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">18k+</div>
+      <div class="stat-t">Reservas completadas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">4.8★</div>
+      <div class="stat-t">Calificación promedio</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ROLES SECTION ════ -->
+<section class="roles-section">
+  <div class="section-label">¿Quién sos vos?</div>
+  <h2 class="section-title">Una plataforma,<br><em>dos experiencias</em></h2>
+  <p class="section-sub">Cada rol tiene su propio mundo dentro de NidoStay. Elegí el tuyo al registrarte.</p>
+
+  <div class="roles-grid">
+
+    <!-- ANFITRIÓN -->
+    <div class="role-panel">
+      <div class="rp-header host">
+        <div class="rp-deco">🏠</div>
+        <div class="rp-icon-wrap">🏠</div>
+        <div class="rp-role-tag">Anfitrión</div>
+        <div class="rp-title">Publicá tu<br>espacio</div>
+        <div class="rp-desc">Convertí tu propiedad en ingresos. Vos ponés las reglas, el precio y la disponibilidad.</div>
+      </div>
+      <div class="rp-body">
+
+        <div class="feat-group-title">📋 Gestión de propiedades</div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">📸</div>
+          <div class="fr-content">
+            <div class="fr-name">Publicar alojamiento</div>
+            <div class="fr-desc">Fotos, descripción, precio y reglas de la casa</div>
+          </div>
+          <span class="fr-badge badge-live">ACTIVO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">📅</div>
+          <div class="fr-content">
+            <div class="fr-name">Calendario de disponibilidad</div>
+            <div class="fr-desc">Bloqueá días, definí precios por temporada</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">✏️</div>
+          <div class="fr-content">
+            <div class="fr-name">Editar y pausar publicación</div>
+            <div class="fr-desc">Activar o desactivar sin perder tu historial</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+
+        <div class="feat-group-title">💬 Reservas y huéspedes</div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">✅</div>
+          <div class="fr-content">
+            <div class="fr-name">Aceptar o rechazar solicitudes</div>
+            <div class="fr-desc">Con mensaje personalizado al huésped</div>
+          </div>
+          <span class="fr-badge badge-live">ACTIVO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">⭐</div>
+          <div class="fr-content">
+            <div class="fr-name">Calificar a tus huéspedes</div>
+            <div class="fr-desc">Reseñas privadas para la comunidad</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon host-icon">💰</div>
+          <div class="fr-content">
+            <div class="fr-name">Historial de cobros</div>
+            <div class="fr-desc">Ingresos, comisiones y transferencias</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+
+        <button class="rp-cta cta-host">Empezar a publicar →</button>
+      </div>
+    </div>
+
+    <!-- HUÉSPED -->
+    <div class="role-panel">
+      <div class="rp-header guest">
+        <div class="rp-deco">🧳</div>
+        <div class="rp-icon-wrap">🧳</div>
+        <div class="rp-role-tag">Huésped</div>
+        <div class="rp-title">Encontrá tu<br>lugar perfecto</div>
+        <div class="rp-desc">Explorá miles de alojamientos únicos y reservá en minutos. Sin sorpresas.</div>
+      </div>
+      <div class="rp-body">
+
+        <div class="feat-group-title">🔍 Búsqueda y reservas</div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">🗺️</div>
+          <div class="fr-content">
+            <div class="fr-name">Buscar por ciudad y fechas</div>
+            <div class="fr-desc">Filtros por precio, comodidades y tipo</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">📆</div>
+          <div class="fr-content">
+            <div class="fr-name">Solicitar y pagar reserva</div>
+            <div class="fr-desc">Flujo completo de reserva y pago seguro</div>
+          </div>
+          <span class="fr-badge badge-live">ACTIVO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">❌</div>
+          <div class="fr-content">
+            <div class="fr-name">Cancelar con política de reembolso</div>
+            <div class="fr-desc">Según antelación y condiciones del anfitrión</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+
+        <div class="feat-group-title">⭐ Reseñas y confianza</div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">📁</div>
+          <div class="fr-content">
+            <div class="fr-name">Historial de reservas</div>
+            <div class="fr-desc">Activas, pasadas y canceladas en un lugar</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">⭐</div>
+          <div class="fr-content">
+            <div class="fr-name">Dejar reseña del alojamiento</div>
+            <div class="fr-desc">Solo disponible luego del check-out</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+        <div class="feat-row">
+          <div class="fr-icon guest-icon">❤️</div>
+          <div class="fr-content">
+            <div class="fr-name">Lista de favoritos</div>
+            <div class="fr-desc">Guardá y compará alojamientos que te gusten</div>
+          </div>
+          <span class="fr-badge badge-soon">PRÓXIMO</span>
+        </div>
+
+        <button class="rp-cta cta-guest">Explorar alojamientos →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════ DASHBOARD SECTION ════ -->
+<section class="dash-section">
+  <div class="section-label">Vista previa</div>
+  <h2 class="section-title">Tu <em>panel</em> personal</h2>
+  <p class="section-sub">Cada rol ve una interfaz completamente distinta, diseñada para su flujo de trabajo.</p>
+
+  <div class="dash-toggle">
+    <button class="dt-btn dt-host active" id="dBtn-host" onclick="switchDash('host')">🏠 Panel Anfitrión</button>
+    <button class="dt-btn dt-guest" id="dBtn-guest" onclick="switchDash('guest')">🧳 Panel Huésped</button>
+  </div>
+
+  <!-- HOST DASHBOARD -->
+  <div class="dash-view active" id="dash-host">
+    <div class="dash-shell">
+      <div class="dash-topbar">
+        <div class="dot-w dot-r"></div>
+        <div class="dot-w dot-y"></div>
+        <div class="dot-w dot-g"></div>
+        <span class="dash-title-bar">NidoStay — Panel Anfitrión</span>
+      </div>
+      <div class="dash-inner">
+        <div class="dash-sidebar">
+          <div class="sidebar-user">
+            <div class="avatar av-host">👤</div>
+            <div>
+              <div class="sidebar-name">Carlos M.</div>
+              <div class="sidebar-role">Anfitrión</div>
+            </div>
+          </div>
+          <div class="nav-item active host-active"><span class="ni-icon">📊</span> Panel</div>
+          <div class="nav-item"><span class="ni-icon">🏠</span> Mis propiedades</div>
+          <div class="nav-item"><span class="ni-icon">📋</span> Reservas <span class="notif-dot">3</span></div>
+          <div class="nav-item"><span class="ni-icon">📅</span> Calendario</div>
+          <div class="nav-item"><span class="ni-icon">💰</span> Ingresos</div>
+          <div class="nav-sep"></div>
+          <div class="nav-item"><span class="ni-icon">⭐</span> Reseñas</div>
+          <div class="nav-item"><span class="ni-icon">💬</span> Mensajes</div>
+          <div class="nav-item"><span class="ni-icon">⚙️</span> Configuración</div>
+        </div>
+        <div class="dash-main">
+          <div class="dash-greeting">Buenos días, <em>Carlos</em> 👋</div>
+          <div class="dash-sub">Tenés 3 nuevas solicitudes de reserva esta semana.</div>
+
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-icon">🏠</div>
+              <div class="kpi-val">4</div>
+              <div class="kpi-label">Propiedades activas</div>
+              <div class="kpi-trend trend-up">↑ +1 este mes</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon">💸</div>
+              <div class="kpi-val">$1.840</div>
+              <div class="kpi-label">Ingresos del mes</div>
+              <div class="kpi-trend trend-up">↑ +23% vs anterior</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon">⭐</div>
+              <div class="kpi-val">4.9</div>
+              <div class="kpi-label">Rating promedio</div>
+              <div class="kpi-trend trend-up">↑ Excelente</div>
+            </div>
+          </div>
+
+          <div class="dash-table-wrap">
+            <div class="table-head">
+              <span class="table-head-title">Solicitudes pendientes</span>
+              <span class="table-head-action">Ver todas →</span>
+            </div>
+            <div class="t-row host-table-row t-header">
+              <span>Huésped</span><span>Propiedad</span><span>Fechas</span><span>Monto</span><span>Estado</span>
+            </div>
+            <div class="t-row host-table-row">
+              <span>👤 Laura G.</span><span>Dpto. Palermo</span><span>15–18 Ago</span><span>$255</span>
+              <span class="status-pill pill-yellow">Pendiente</span>
+            </div>
+            <div class="t-row host-table-row">
+              <span>👤 Marcos R.</span><span>Casa Tigre</span><span>20–25 Ago</span><span>$420</span>
+              <span class="status-pill pill-yellow">Pendiente</span>
+            </div>
+            <div class="t-row host-table-row">
+              <span>👤 Ana P.</span><span>Dpto. Palermo</span><span>1–3 Sep</span><span>$170</span>
+              <span class="status-pill pill-green">Confirmada</span>
+            </div>
+            <div class="t-row host-table-row">
+              <span>👤 Diego S.</span><span>Cabaña Bariloche</span><span>10–17 Sep</span><span>$680</span>
+              <span class="status-pill pill-blue">En revisión</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUEST DASHBOARD -->
+  <div class="dash-view" id="dash-guest">
+    <div class="dash-shell">
+      <div class="dash-topbar">
+        <div class="dot-w dot-r"></div>
+        <div class="dot-w dot-y"></div>
+        <div class="dot-w dot-g"></div>
+        <span class="dash-title-bar">NidoStay — Panel Huésped</span>
+      </div>
+      <div class="dash-inner">
+        <div class="dash-sidebar">
+          <div class="sidebar-user">
+            <div class="avatar av-guest">👤</div>
+            <div>
+              <div class="sidebar-name">Sofía T.</div>
+              <div class="sidebar-role">Huésped</div>
+            </div>
+          </div>
+          <div class="nav-item active guest-active"><span class="ni-icon">🏠</span> Inicio</div>
+          <div class="nav-item"><span class="ni-icon">🔍</span> Explorar</div>
+          <div class="nav-item"><span class="ni-icon">📋</span> Mis reservas <span class="notif-dot">1</span></div>
+          <div class="nav-item"><span class="ni-icon">❤️</span> Favoritos</div>
+          <div class="nav-item"><span class="ni-icon">💳</span> Pagos</div>
+          <div class="nav-sep"></div>
+          <div class="nav-item"><span class="ni-icon">⭐</span> Mis reseñas</div>
+          <div class="nav-item"><span class="ni-icon">💬</span> Mensajes</div>
+          <div class="nav-item"><span class="ni-icon">⚙️</span> Mi perfil</div>
+        </div>
+        <div class="dash-main">
+          <div class="dash-greeting dash-greeting-g">Hola de nuevo, <em>Sofía</em> 🌿</div>
+          <div class="dash-sub">Tu próxima estadía es en 12 días. ¿Todo listo para el viaje?</div>
+
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-icon">📆</div>
+              <div class="kpi-val">1</div>
+              <div class="kpi-label">Reserva próxima</div>
+              <div class="kpi-trend trend-up">✔ Confirmada</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon">🗺️</div>
+              <div class="kpi-val">8</div>
+              <div class="kpi-label">Viajes realizados</div>
+              <div class="kpi-trend trend-up">↑ Viajera frecuente</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon">❤️</div>
+              <div class="kpi-val">14</div>
+              <div class="kpi-label">En favoritos</div>
+              <div class="kpi-trend" style="color:var(--guest)">→ Ver lista</div>
+            </div>
+          </div>
+
+          <div class="dash-table-wrap">
+            <div class="table-head">
+              <span class="table-head-title">Mis reservas</span>
+              <span class="table-head-action">Ver historial →</span>
+            </div>
+            <div class="t-row guest-table-row t-header">
+              <span>Alojamiento</span><span>Anfitrión</span><span>Fechas</span><span>Estado</span>
+            </div>
+            <div class="t-row guest-table-row">
+              <span>🏡 Casa Tigre</span><span>Carlos M.</span><span>20–25 Ago</span>
+              <span class="status-pill pill-green">Confirmada</span>
+            </div>
+            <div class="t-row guest-table-row">
+              <span>🌊 Dpto. MdP</span><span>Elena R.</span><span>5–8 Oct</span>
+              <span class="status-pill pill-yellow">Pendiente</span>
+            </div>
+            <div class="t-row guest-table-row">
+              <span>🏔️ Cabaña Bariloche</span><span>Miguel P.</span><span>Dic 2024</span>
+              <span class="status-pill pill-blue">Completada</span>
+            </div>
+            <div class="t-row guest-table-row">
+              <span>🏙️ Dpto. Palermo</span><span>Ana G.</span><span>Mar 2024</span>
+              <span class="status-pill pill-blue">Completada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer>
+  <div class="logo">Nido<span>Stay</span></div>
+  <p>© 2025 NidoStay · Alojamientos únicos en Argentina</p>
+</footer>
+
+<script>
+  function setRole(role, btn) {
+    document.querySelectorAll('.vt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function switchDash(role) {
+    document.querySelectorAll('.dash-view').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.dt-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('dash-' + role).classList.add('active');
+    document.getElementById('dBtn-' + role).classList.add('active');
+  }
+</script>
+</body>
+</html>

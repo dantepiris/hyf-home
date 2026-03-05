@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NidoStay — Panel Anfitrión</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:    #F9F4EE;
+  --surf:  #FFFFFF;
+  --clay:  #C17D4B;
+  --clay2: #9E6338;
+  --c3:    #FDF0E4;
+  --ink:   #1A1208;
+  --char:  #3A2E20;
+  --muted: #9A8A78;
+  --border:#E4D8C8;
+  --cream: #F5EFE5;
+  --green: #3D7A55;
+  --blue:  #2E6E8E;
+  --red:   #B85450;
+  --yellow:#D4920A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:240px;flex-shrink:0;background:var(--surf);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  overflow-y:auto;
+}
+.sb-logo{padding:1.4rem 1.5rem 1.2rem;border-bottom:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:-.3px;}
+.sb-logo span{color:var(--clay);}
+.sb-user{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.8rem;}
+.av{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--clay),var(--clay2));display:flex;align-items:center;justify-content:center;font-size:.9rem;border:2px solid var(--c3);}
+.sb-uname{font-size:.83rem;font-weight:600;color:var(--ink);}
+.sb-role{display:inline-block;font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;padding:.12rem .45rem;border-radius:3px;background:var(--c3);color:var(--clay);font-weight:700;margin-top:.2rem;}
+.sb-section{padding:.9rem 1.5rem .4rem;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1.5rem;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s;border-left:2px solid transparent;text-decoration:none;}
+.nav-item:hover{background:var(--cream);color:var(--ink);}
+.nav-item.active{background:var(--c3);color:var(--clay);font-weight:600;border-left-color:var(--clay);}
+.ni-icon{font-size:.95rem;width:18px;text-align:center;}
+.notif{margin-left:auto;background:var(--red);color:white;font-size:.55rem;font-weight:700;border-radius:2rem;padding:.1rem .4rem;}
+.sb-footer{margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);}
+.sb-footer a{display:flex;align-items:center;gap:.6rem;font-size:.75rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+.sb-footer a:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.main{margin-left:240px;flex:1;min-width:0;}
+.topbar{background:var(--surf);border-bottom:1px solid var(--border);padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:50;}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--ink);}
+.tb-title em{font-style:italic;color:var(--clay);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:.8rem;}
+.tb-icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .2s;position:relative;}
+.tb-icon-btn:hover{background:var(--c3);}
+.tb-badge{position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--red);border:2px solid white;}
+.btn-add{padding:.45rem 1.1rem;background:var(--clay);color:white;border:none;border-radius:2rem;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s;}
+.btn-add:hover{background:var(--clay2);}
+
+/* ── CONTENT ── */
+.content{padding:2rem;}
+
+/* Welcome banner */
+.welcome-banner{
+  background:linear-gradient(135deg,#C17D4B 0%,#8B5230 100%);
+  border-radius:20px;padding:2rem 2.5rem;margin-bottom:2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.wb-deco{position:absolute;right:-20px;top:-20px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);}
+.wb-deco2{position:absolute;right:80px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.04);}
+.wb-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:white;line-height:1.15;letter-spacing:-.3px;}
+.wb-title em{font-style:italic;opacity:.85;}
+.wb-sub{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.4rem;line-height:1.5;}
+.wb-stat{display:flex;gap:1.5rem;margin-top:1rem;}
+.wbs{text-align:center;}
+.wbs-n{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:white;line-height:1;}
+.wbs-l{font-size:.62rem;color:rgba(255,255,255,.55);margin-top:.15rem;}
+.wb-cta{background:white;color:var(--clay);border:none;border-radius:12px;padding:.7rem 1.4rem;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;margin-left:2rem;z-index:1;}
+.wb-cta:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2);}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.kpi{background:var(--surf);border-radius:14px;padding:1.2rem 1.4rem;border:1px solid var(--border);}
+.kpi-icon{font-size:1.1rem;margin-bottom:.5rem;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--ink);line-height:1;}
+.kpi-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.25rem;}
+.kpi-sub{font-size:.68rem;font-weight:600;margin-top:.35rem;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+.neu{color:var(--clay);}
+
+/* Sec header */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;letter-spacing:-.3px;color:var(--ink);}
+.sec-link{font-size:.75rem;color:var(--clay);font-weight:600;cursor:pointer;text-decoration:none;}
+.sec-link:hover{text-decoration:underline;}
+
+/* PROPIEDADES */
+.props-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:2rem;}
+.prop-card{background:var(--surf);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:all .25s;cursor:pointer;}
+.prop-card:hover{transform:translateY(-3px);box-shadow:0 14px 35px rgba(193,125,75,.13);}
+.pc-img{width:100%;height:140px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative;}
+.img-a{background:linear-gradient(135deg,#C17D4B,#8B5230);}
+.img-b{background:linear-gradient(135deg,#3B8C6E,#1F5A42);}
+.img-c{background:linear-gradient(135deg,#5B7EC9,#2E4E8E);}
+.img-d{background:linear-gradient(135deg,#8C5B9E,#5A2E70);}
+.pc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.15));}
+.pc-status{position:absolute;top:10px;right:10px;z-index:2;font-size:.6rem;font-weight:700;padding:.2rem .6rem;border-radius:2rem;white-space:nowrap;}
+.st-on{background:#D1FAE5;color:#065F46;}
+.st-off{background:#FEE2E2;color:#991B1B;}
+.st-pending{background:#FEF3C7;color:#92400E;}
+.pc-body{padding:.85rem 1rem;}
+.pc-loc{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.pc-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.2;margin-top:.15rem;}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;}
+.pc-price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--clay);}
+.pc-night{font-size:.62rem;color:var(--muted);}
+.pc-actions{display:flex;gap:.4rem;margin-top:.7rem;}
+.pca{padding:.3rem .7rem;border-radius:6px;border:1px solid var(--border);background:transparent;font-family:'Outfit',sans-serif;font-size:.68rem;font-weight:500;cursor:pointer;transition:all .2s;color:var(--muted);}
+.pca:hover{border-color:var(--clay);color:var(--clay);}
+.pca.danger:hover{border-color:var(--red);color:var(--red);}
+
+/* TABLE */
+.table-card{background:var(--surf);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:2rem;}
+.table-head{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.th-title{font-size:.82rem;font-weight:600;color:var(--ink);}
+.th-link{font-size:.7rem;color:var(--clay);cursor:pointer;font-weight:500;}
+.t-row{display:grid;padding:.75rem 1.4rem;border-bottom:1px solid #F8F2EC;align-items:center;font-size:.76rem;color:var(--char);transition:background .15s;cursor:default;}
+.t-row:hover{background:var(--cream);}
+.t-row:last-child{border-bottom:none;}
+.tr-res{grid-template-columns:2fr 1.5fr 1fr 1fr 100px;}
+.tr-ing{grid-template-columns:1fr 1fr 1fr 1fr;}
+.t-hd{color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.t-hd:hover{background:transparent;}
+.pill{font-size:.62rem;font-weight:700;padding:.18rem .55rem;border-radius:3px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.pill-g{background:#D1FAE5;color:#065F46;}
+.pill-y{background:#FEF3C7;color:#92400E;}
+.pill-b{background:#DBEAFE;color:#1E40AF;}
+.pill-r{background:#FEE2E2;color:#991B1B;}
+.t-action{display:flex;gap:.4rem;}
+.ta-btn{padding:.22rem .6rem;border:1px solid var(--border);border-radius:5px;background:transparent;font-size:.65rem;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;transition:all .2s;color:var(--muted);}
+.ta-btn.accept:hover{background:#D1FAE5;border-color:#6EE7B7;color:#065F46;}
+.ta-btn.reject:hover{background:#FEE2E2;border-color:#FCA5A5;color:#991B1B;}
+
+/* TWO COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+.card-box{background:var(--surf);border-radius:16px;border:1px solid var(--border);overflow:hidden;}
+.card-box-head{padding:.9rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.cbh-title{font-size:.82rem;font-weight:600;color:var(--ink);}
+.cbh-link{font-size:.7rem;color:var(--clay);cursor:pointer;font-weight:500;}
+
+/* INGRESOS CHART */
+.income-bars{padding:1.2rem 1.4rem;}
+.month-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;}
+.month-lbl{font-size:.72rem;color:var(--muted);width:28px;text-align:right;flex-shrink:0;}
+.bar-bg{flex:1;height:8px;background:var(--cream);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--clay),#E8972A);transition:width .8s ease;}
+.month-val{font-size:.72rem;font-weight:600;color:var(--ink);width:55px;text-align:right;flex-shrink:0;}
+
+/* ACTIVIDAD */
+.act-item{padding:.75rem 1.2rem;border-bottom:1px solid #F8F2EC;display:flex;align-items:flex-start;gap:.8rem;}
+.act-item:last-child{border-bottom:none;}
+.act-dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;margin-top:1px;}
+.ad-orange{background:#FDF0E4;}
+.ad-green{background:#D1FAE5;}
+.ad-blue{background:#DBEAFE;}
+.ad-yellow{background:#FEF3C7;}
+.act-text{font-size:.78rem;color:var(--char);line-height:1.45;}
+.act-time{font-size:.65rem;color:var(--muted);margin-top:.15rem;}
+
+/* CALENDAR PREVIEW */
+.cal-grid{padding:1rem 1.2rem;}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;}
+.cal-month{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);}
+.cal-nav{background:transparent;border:1px solid var(--border);border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.cal-nav:hover{background:var(--c3);}
+.cal-days-hd{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.cal-day-hd{text-align:center;font-size:.6rem;color:var(--muted);font-weight:600;padding:.2rem 0;}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-day{text-align:center;padding:.3rem .1rem;font-size:.7rem;border-radius:5px;cursor:pointer;transition:all .15s;}
+.cal-day:hover{background:var(--c3);}
+.cal-day.booked{background:var(--clay);color:white;font-weight:600;}
+.cal-day.blocked{background:var(--cream);color:var(--muted);text-decoration:line-through;}
+.cal-day.today{border:1.5px solid var(--clay);color:var(--clay);font-weight:700;}
+.cal-day.empty{opacity:0;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.anim{animation:fadeUp .5s ease both;}
+.anim2{animation:fadeUp .5s .1s ease both;}
+.anim3{animation:fadeUp .5s .2s ease both;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .props-row{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+  .tr-res{grid-template-columns:2fr 1fr 80px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">Nido<span>Stay</span></div>
+  <div class="sb-user">
+    <div class="av">🏠</div>
+    <div>
+      <div class="sb-uname" id="sb-name">Anfitrión</div>
+      <div class="sb-role">Anfitrión</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Principal</div>
+  <a class="nav-item active" href="#"><span class="ni-icon">📊</span> Panel</a>
+  <a class="nav-item" href="#propiedades"><span class="ni-icon">🏠</span> Mis propiedades</a>
+  <a class="nav-item" href="#reservas"><span class="ni-icon">📋</span> Reservas <span class="notif">3</span></a>
+  <a class="nav-item" href="#"><span class="ni-icon">📅</span> Calendario</a>
+  <a class="nav-item" href="#ingresos"><span class="ni-icon">💰</span> Ingresos</a>
+
+  <div class="sb-section">Cuenta</div>
+  <a class="nav-item" href="#"><span class="ni-icon">⭐</span> Reseñas</a>
+  <a class="nav-item" href="#"><span class="ni-icon">💬</span> Mensajes <span class="notif">2</span></a>
+  <a class="nav-item" href="#"><span class="ni-icon">⚙️</span> Configuración</a>
+
+  <div class="sb-footer">
+    <a href="index.html">← Volver al inicio</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div class="tb-title">Buenos días, <em id="tb-name">anfitrión</em> 👋</div>
+    <div class="tb-r">
+      <button class="btn-add" onclick="alert('Funcionalidad próximamente')">+ Publicar propiedad</button>
+      <button class="tb-icon-btn">🔔<div class="tb-badge"></div></button>
+      <button class="tb-icon-btn">💬</button>
+      <button class="tb-icon-btn">👤</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- WELCOME -->
+    <div class="welcome-banner anim">
+      <div class="wb-deco"></div><div class="wb-deco2"></div>
+      <div>
+        <div class="wb-title">Tu espacio,<br><em>tu negocio</em> 🏡</div>
+        <div class="wb-sub">Tenés 3 solicitudes pendientes esta semana. ¡Respondelas para mantener tu tasa de respuesta alta!</div>
+        <div class="wb-stat">
+          <div class="wbs"><div class="wbs-n">4</div><div class="wbs-l">Propiedades</div></div>
+          <div class="wbs"><div class="wbs-n">$1.840</div><div class="wbs-l">Este mes</div></div>
+          <div class="wbs"><div class="wbs-n">4.9★</div><div class="wbs-l">Rating</div></div>
+        </div>
+      </div>
+      <button class="wb-cta" onclick="document.getElementById('reservas').scrollIntoView({behavior:'smooth'})">Ver solicitudes →</button>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-row anim2">
+      <div class="kpi">
+        <div class="kpi-icon">🏠</div>
+        <div class="kpi-val">4</div>
+        <div class="kpi-lbl">Propiedades activas</div>
+        <div class="kpi-sub up">↑ +1 este mes</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">💸</div>
+        <div class="kpi-val">$1.840</div>
+        <div class="kpi-lbl">Ingresos del mes</div>
+        <div class="kpi-sub up">↑ +23% vs anterior</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-val">3</div>
+        <div class="kpi-lbl">Solicitudes pendientes</div>
+        <div class="kpi-sub dn">⚠ Respondé pronto</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-val">4.9</div>
+        <div class="kpi-lbl">Rating promedio</div>
+        <div class="kpi-sub up">↑ Superanfitrión</div>
+      </div>
+    </div>
+
+    <!-- PROPIEDADES -->
+    <div id="propiedades" style="scroll-margin-top:70px;">
+      <div class="sec-hd anim3">
+        <div class="sec-title">Mis propiedades</div>
+        <a class="sec-link" href="#">Ver todas →</a>
+      </div>
+      <div class="props-row anim3">
+        <div class="prop-card">
+          <div class="pc-img img-a"><div class="pc-status st-on">● Activa</div>🏡</div>
+          <div class="pc-body">
+            <div class="pc-loc">Palermo, Buenos Aires</div>
+            <div class="pc-name">Departamento con terraza privada</div>
+            <div class="pc-foot"><div><span class="pc-price">$85</span><span class="pc-night"> USD/noche</span></div><span style="font-size:.7rem;color:var(--muted)">⭐ 4.9 (38)</span></div>
+            <div class="pc-actions">
+              <button class="pca">✏️ Editar</button>
+              <button class="pca">📅 Calendario</button>
+              <button class="pca danger">⏸ Pausar</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="pc-img img-b"><div class="pc-status st-on">● Activa</div>🌿</div>
+          <div class="pc-body">
+            <div class="pc-loc">Tigre, Buenos Aires</div>
+            <div class="pc-name">Casa con jardín en el Delta</div>
+            <div class="pc-foot"><div><span class="pc-price">$120</span><span class="pc-night"> USD/noche</span></div><span style="font-size:.7rem;color:var(--muted)">⭐ 5.0 (21)</span></div>
+            <div class="pc-actions">
+              <button class="pca">✏️ Editar</button>
+              <button class="pca">📅 Calendario</button>
+              <button class="pca danger">⏸ Pausar</button>
+            </div>
+          </div>
+        </div>
+        <div class="prop-card">
+          <div class="pc-img img-c"><div class="pc-status st-pending">● Pendiente</div>⛰️</div>
+          <div class="pc-body">
+            <div class="pc-loc">Bariloche, Río Negro</div>
+            <div class="pc-name">Cabaña de montaña con chimenea</div>
+            <div class="pc-foot"><div><span class="pc-price">$95</span><span class="pc-night"> USD/noche</span></div><span style="font-size:.7rem;color:var(--muted)">⭐ 4.8 (14)</span></div>
+            <div class="pc-actions">
+              <button class="pca">✏️ Editar</button>
+              <button class="pca">📅 Calendario</button>
+              <button class="pca danger" style="color:var(--red);border-color:var(--red)">🗑 Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVAS TABLE -->
+    <div id="reservas" style="scroll-margin-top:70px;margin-bottom:2rem;">
+      <div class="sec-hd anim3">
+        <div class="sec-title">Solicitudes de reserva</div>
+        <a class="sec-link">Ver historial →</a>
+      </div>
+      <div class="table-card anim3">
+        <div class="table-head">
+          <span class="th-title">Pendientes de respuesta · <span style="color:var(--red);">3</span></span>
+          <span class="th-link">Exportar →</span>
+        </div>
+        <div class="t-row tr-res t-hd"><span>Huésped</span><span>Propiedad</span><span>Fechas</span><span>Monto</span><span>Acción</span></div>
+        <div class="t-row tr-res">
+          <span>👤 Laura García</span>
+          <span>Dpto. Palermo</span>
+          <span>15–18 Ago</span>
+          <span style="font-weight:600;color:var(--green)">$255</span>
+          <div class="t-action">
+            <button class="ta-btn accept" onclick="acceptRes(this)">✓ Aceptar</button>
+            <button class="ta-btn reject" onclick="rejectRes(this)">✕</button>
+          </div>
+        </div>
+        <div class="t-row tr-res">
+          <span>👤 Marcos Ruiz</span>
+          <span>Casa Tigre</span>
+          <span>20–25 Ago</span>
+          <span style="font-weight:600;color:var(--green)">$420</span>
+          <div class="t-action">
+            <button class="ta-btn accept" onclick="acceptRes(this)">✓ Aceptar</button>
+            <button class="ta-btn reject" onclick="rejectRes(this)">✕</button>
+          </div>
+        </div>
+        <div class="t-row tr-res">
+          <span>👤 Ana Pérez</span>
+          <span>Dpto. Palermo</span>
+          <span>1–3 Sep</span>
+          <span style="font-weight:600;color:var(--green)">$170</span>
+          <div class="t-action">
+            <button class="ta-btn accept" onclick="acceptRes(this)">✓ Aceptar</button>
+            <button class="ta-btn reject" onclick="rejectRes(this)">✕</button>
+          </div>
+        </div>
+        <div class="t-row tr-res">
+          <span>👤 Diego Sosa</span>
+          <span>Cabaña Bariloche</span>
+          <span>10–17 Sep</span>
+          <span style="font-weight:600;color:var(--green)">$680</span>
+          <span class="pill pill-g">Confirmada</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLS: INGRESOS + CALENDARIO + ACTIVIDAD -->
+    <div class="two-col" id="ingresos">
+      <!-- INGRESOS -->
+      <div class="card-box">
+        <div class="card-box-head">
+          <span class="cbh-title">Ingresos por mes</span>
+          <span class="cbh-link">Ver detalle →</span>
+        </div>
+        <div class="income-bars">
+          <div class="month-row"><span class="month-lbl">Abr</span><div class="bar-bg"><div class="bar-fill" style="width:45%"></div></div><span class="month-val">$820</span></div>
+          <div class="month-row"><span class="month-lbl">May</span><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div><span class="month-val">$1.100</span></div>
+          <div class="month-row"><span class="month-lbl">Jun</span><div class="bar-bg"><div class="bar-fill" style="width:38%"></div></div><span class="month-val">$680</span></div>
+          <div class="month-row"><span class="month-lbl">Jul</span><div class="bar-bg"><div class="bar-fill" style="width:75%"></div></div><span class="month-val">$1.380</span></div>
+          <div class="month-row"><span class="month-lbl">Ago</span><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><span class="month-val">$1.840</span></div>
+        </div>
+      </div>
+
+      <!-- ACTIVIDAD -->
+      <div class="card-box">
+        <div class="card-box-head">
+          <span class="cbh-title">Actividad reciente</span>
+          <span class="cbh-link">Ver todo →</span>
+        </div>
+        <div class="act-item">
+          <div class="act-dot ad-orange">📩</div>
+          <div><div class="act-text"><strong>Laura García</strong> solicitó reservar tu departamento en Palermo.</div><div class="act-time">Hace 1 hora</div></div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot ad-green">💸</div>
+          <div><div class="act-text">Pago de <strong>$680</strong> confirmado por la reserva de Diego Sosa.</div><div class="act-time">Hace 3 horas</div></div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot ad-blue">⭐</div>
+          <div><div class="act-text"><strong>Ana Pérez</strong> dejó una reseña de 5 estrellas en tu departamento.</div><div class="act-time">Ayer</div></div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot ad-yellow">💡</div>
+          <div><div class="act-text">Tu tasa de respuesta es del <strong>96%</strong>. ¡Seguí así para mantener el badge!</div><div class="act-time">Hace 2 días</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// Load user
+const raw = localStorage.getItem('nidoUser');
+const user = raw ? JSON.parse(raw) : { name: 'Anfitrión' };
+const name = user.name || 'Anfitrión';
+document.getElementById('sb-name').textContent = name;
+document.getElementById('tb-name').textContent = name;
+
+function acceptRes(btn){
+  const row = btn.closest('.t-row');
+  const actions = row.querySelector('.t-action');
+  actions.innerHTML = '<span class="pill pill-g">Aceptada</span>';
+}
+function rejectRes(btn){
+  const row = btn.closest('.t-row');
+  const actions = row.querySelector('.t-action');
+  actions.innerHTML = '<span class="pill pill-r">Rechazada</span>';
+}
+</script>
+</body>
+</html>

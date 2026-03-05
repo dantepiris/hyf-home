@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NidoStay — Panel Huésped</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:    #EEF4F8;
+  --surf:  #FFFFFF;
+  --guest: #2E6E8E;
+  --g2:    #1D5470;
+  --g3:    #E4EEF5;
+  --ink:   #0F1E28;
+  --char:  #2A3A46;
+  --muted: #7A8E9A;
+  --border:#D4E2EA;
+  --cream: #F5F9FB;
+  --green: #3D7A55;
+  --clay:  #C17D4B;
+  --red:   #B85450;
+  --yellow:#D4920A;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:240px;flex-shrink:0;background:var(--surf);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;
+  overflow-y:auto;
+}
+.sb-logo{
+  padding:1.4rem 1.5rem 1.2rem;
+  border-bottom:1px solid var(--border);
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;
+  color:var(--ink);letter-spacing:-.3px;
+}
+.sb-logo span{color:var(--guest);}
+
+.sb-user{
+  padding:1.1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.8rem;
+}
+.av{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--guest),var(--g2));
+  display:flex;align-items:center;justify-content:center;font-size:.9rem;
+  border:2px solid var(--g3);
+}
+.sb-uname{font-size:.83rem;font-weight:600;color:var(--ink);}
+.sb-role{
+  display:inline-block;font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;
+  padding:.12rem .45rem;border-radius:3px;background:var(--g3);color:var(--guest);
+  font-weight:700;margin-top:.2rem;
+}
+
+.sb-section{
+  padding:.9rem 1.5rem .4rem;
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.6rem 1.5rem;font-size:.8rem;color:var(--muted);
+  cursor:pointer;transition:all .2s;border-left:2px solid transparent;
+  text-decoration:none;
+}
+.nav-item:hover{background:var(--cream);color:var(--ink);}
+.nav-item.active{
+  background:var(--g3);color:var(--guest);font-weight:600;
+  border-left-color:var(--guest);
+}
+.ni-icon{font-size:.95rem;width:18px;text-align:center;}
+.notif{margin-left:auto;background:var(--red);color:white;font-size:.55rem;font-weight:700;border-radius:2rem;padding:.1rem .4rem;}
+.sb-footer{
+  margin-top:auto;padding:1rem 1.5rem;border-top:1px solid var(--border);
+}
+.sb-footer a{display:flex;align-items:center;gap:.6rem;font-size:.75rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+.sb-footer a:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.main{margin-left:240px;flex:1;min-width:0;}
+
+/* TOPBAR */
+.topbar{
+  background:var(--surf);border-bottom:1px solid var(--border);
+  padding:0 2rem;height:60px;display:flex;align-items:center;gap:1rem;
+  position:sticky;top:0;z-index:50;
+}
+.tb-greeting{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--ink);}
+.tb-greeting em{font-style:italic;color:var(--guest);}
+.tb-search{
+  flex:1;max-width:320px;margin-left:1.5rem;
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--cream);border:1px solid var(--border);border-radius:2rem;
+  padding:.4rem 1rem;
+}
+.tb-search input{border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.8rem;color:var(--ink);outline:none;width:100%;}
+.tb-search input::placeholder{color:var(--muted);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:.8rem;}
+.tb-icon-btn{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
+  background:transparent;cursor:pointer;font-size:.95rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+  position:relative;
+}
+.tb-icon-btn:hover{background:var(--g3);}
+.tb-badge{
+  position:absolute;top:-2px;right:-2px;width:10px;height:10px;
+  border-radius:50%;background:var(--red);border:2px solid white;
+}
+
+/* ── CONTENT ── */
+.content{padding:2rem;}
+
+/* Welcome banner */
+.welcome-banner{
+  background:linear-gradient(135deg,var(--guest) 0%,var(--g2) 100%);
+  border-radius:20px;padding:2rem 2.5rem;margin-bottom:2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.wb-deco{
+  position:absolute;right:-20px;top:-20px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.wb-deco2{
+  position:absolute;right:80px;bottom:-40px;
+  width:140px;height:140px;border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.wb-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:white;line-height:1.15;letter-spacing:-.3px;}
+.wb-title em{font-style:italic;opacity:.85;}
+.wb-sub{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:.4rem;line-height:1.5;}
+.wb-tags{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;}
+.wb-tag{
+  background:rgba(255,255,255,.15);color:white;
+  font-size:.7rem;font-weight:600;border-radius:2rem;
+  padding:.25rem .75rem;border:1px solid rgba(255,255,255,.2);
+}
+.wb-cta{
+  background:white;color:var(--guest);
+  border:none;border-radius:12px;padding:.7rem 1.4rem;
+  font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;
+  cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;
+  margin-left:2rem;z-index:1;
+}
+.wb-cta:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2);}
+
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.kpi{background:var(--surf);border-radius:14px;padding:1.2rem 1.4rem;border:1px solid var(--border);}
+.kpi-icon{font-size:1.1rem;margin-bottom:.5rem;}
+.kpi-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--ink);line-height:1;}
+.kpi-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.25rem;}
+.kpi-sub{font-size:.68rem;font-weight:600;margin-top:.35rem;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+.neu{color:var(--guest);}
+
+/* Section title */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;letter-spacing:-.3px;color:var(--ink);}
+.sec-link{font-size:.75rem;color:var(--guest);font-weight:600;cursor:pointer;text-decoration:none;}
+.sec-link:hover{text-decoration:underline;}
+
+/* ALOJAMIENTOS RECOMENDADOS */
+.props-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:2rem;}
+.prop-card{
+  background:var(--surf);border-radius:16px;overflow:hidden;
+  border:1px solid var(--border);transition:all .25s;cursor:pointer;
+}
+.prop-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(46,110,142,.14);}
+.pc-img{
+  width:100%;height:155px;position:relative;display:flex;align-items:center;
+  justify-content:center;font-size:3rem;
+}
+.img-a{background:linear-gradient(135deg,#C17D4B,#8B5230);}
+.img-b{background:linear-gradient(135deg,#3B8C6E,#1F5A42);}
+.img-c{background:linear-gradient(135deg,#5B7EC9,#2E4E8E);}
+.img-d{background:linear-gradient(135deg,#8C5B9E,#5A2E70);}
+.img-e{background:linear-gradient(135deg,#9E7B3A,#6B5020);}
+.img-f{background:linear-gradient(135deg,#3B8C8C,#1F5A5A);}
+.pc-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.15));}
+.pc-match{
+  position:absolute;top:10px;right:10px;z-index:2;
+  background:var(--green);color:white;
+  font-size:.6rem;font-weight:700;border-radius:2rem;
+  padding:.2rem .6rem;
+}
+.pc-fav{
+  position:absolute;top:10px;left:10px;z-index:2;
+  background:rgba(255,255,255,.9);border:none;border-radius:50%;
+  width:30px;height:30px;cursor:pointer;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.pc-fav:hover{background:white;transform:scale(1.1);}
+.pc-body{padding:.85rem 1rem;}
+.pc-loc{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.pc-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--ink);line-height:1.2;margin-top:.15rem;}
+.pc-feats{display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap;}
+.pc-feat{font-size:.62rem;background:var(--cream);border:1px solid var(--border);border-radius:3px;padding:.1rem .4rem;color:var(--muted);}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;}
+.pc-price{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--guest);}
+.pc-night{font-size:.62rem;color:var(--muted);}
+.pc-stars{display:flex;align-items:center;gap:1px;}
+.star{color:#E8C14B;font-size:.62rem;}
+.star-n{font-size:.65rem;color:var(--muted);margin-left:.2rem;}
+
+/* TWO COLS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+
+/* RESERVAS */
+.card-box{background:var(--surf);border-radius:16px;border:1px solid var(--border);overflow:hidden;}
+.card-box-head{
+  padding:.9rem 1.2rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cbh-title{font-size:.82rem;font-weight:600;color:var(--ink);}
+.cbh-link{font-size:.7rem;color:var(--guest);cursor:pointer;font-weight:500;}
+.reserva-item{
+  padding:.8rem 1.2rem;border-bottom:1px solid #F0F5F8;
+  display:flex;align-items:center;gap:.9rem;
+  transition:background .15s;cursor:pointer;
+}
+.reserva-item:last-child{border-bottom:none;}
+.reserva-item:hover{background:var(--cream);}
+.ri-img{
+  width:48px;height:48px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+}
+.ri-info{flex:1;}
+.ri-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+.ri-date{font-size:.7rem;color:var(--muted);margin-top:.1rem;}
+.pill{font-size:.62rem;font-weight:700;padding:.18rem .55rem;border-radius:3px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.pill-g{background:#D1FAE5;color:#065F46;}
+.pill-y{background:#FEF3C7;color:#92400E;}
+.pill-b{background:#DBEAFE;color:#1E40AF;}
+.pill-r{background:#FEE2E2;color:#991B1B;}
+
+/* ACTIVIDAD */
+.act-item{
+  padding:.75rem 1.2rem;border-bottom:1px solid #F0F5F8;
+  display:flex;align-items:flex-start;gap:.8rem;
+}
+.act-item:last-child{border-bottom:none;}
+.act-dot{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.8rem;margin-top:1px;
+}
+.act-dot.blue{background:var(--g3);}
+.act-dot.green{background:#D1FAE5;}
+.act-dot.yellow{background:#FEF3C7;}
+.act-text{font-size:.78rem;color:var(--char);line-height:1.45;}
+.act-time{font-size:.65rem;color:var(--muted);margin-top:.15rem;}
+
+/* FILTROS */
+.filter-bar{display:flex;gap:.5rem;margin-bottom:1.2rem;flex-wrap:wrap;align-items:center;}
+.fb-label{font-size:.72rem;color:var(--muted);font-weight:600;margin-right:.3rem;}
+.f-chip{
+  padding:.35rem .9rem;border-radius:2rem;border:1.5px solid var(--border);
+  background:var(--surf);color:var(--muted);font-family:'Outfit',sans-serif;
+  font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;
+}
+.f-chip:hover{border-color:var(--guest);color:var(--guest);}
+.f-chip.on{background:var(--guest);color:white;border-color:var(--guest);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.anim{animation:fadeUp .5s ease both;}
+.anim2{animation:fadeUp .5s .1s ease both;}
+.anim3{animation:fadeUp .5s .2s ease both;}
+
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .props-grid{grid-template-columns:repeat(2,1fr);}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">Nido<span>Stay</span></div>
+  <div class="sb-user">
+    <div class="av">🧳</div>
+    <div>
+      <div class="sb-uname" id="sb-name">Cargando...</div>
+      <div class="sb-role">Huésped</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Principal</div>
+  <a class="nav-item active" href="#"><span class="ni-icon">🏠</span> Inicio</a>
+  <a class="nav-item" href="#explorar"><span class="ni-icon">🔍</span> Explorar</a>
+  <a class="nav-item" href="#reservas"><span class="ni-icon">📋</span> Mis reservas <span class="notif">1</span></a>
+  <a class="nav-item" href="#"><span class="ni-icon">❤️</span> Favoritos</a>
+  <a class="nav-item" href="#"><span class="ni-icon">💳</span> Pagos</a>
+
+  <div class="sb-section">Cuenta</div>
+  <a class="nav-item" href="#"><span class="ni-icon">⭐</span> Mis reseñas</a>
+  <a class="nav-item" href="#"><span class="ni-icon">💬</span> Mensajes</a>
+  <a class="nav-item" href="#"><span class="ni-icon">⚙️</span> Configuración</a>
+
+  <div class="sb-footer">
+    <a href="index.html">← Volver al inicio</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-greeting">Hola, <em id="tb-name">viajero</em> 🌿</div>
+    <div class="tb-search">
+      <span style="color:var(--muted);font-size:.85rem;">🔍</span>
+      <input type="text" placeholder="Buscar alojamiento...">
+    </div>
+    <div class="tb-r">
+      <button class="tb-icon-btn">🔔<div class="tb-badge"></div></button>
+      <button class="tb-icon-btn">💬</button>
+      <button class="tb-icon-btn">👤</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner anim">
+      <div class="wb-deco"></div>
+      <div class="wb-deco2"></div>
+      <div>
+        <div class="wb-title">Tu búsqueda personalizada<br><em>está lista</em> ✨</div>
+        <div class="wb-sub">Encontramos los mejores alojamientos según tus preferencias.</div>
+        <div class="wb-tags" id="wb-tags">
+          <!-- filled by JS -->
+        </div>
+      </div>
+      <button class="wb-cta" onclick="scrollTo('explorar')">Ver resultados →</button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row anim2">
+      <div class="kpi">
+        <div class="kpi-icon">🏡</div>
+        <div class="kpi-val" id="kpi-matches">24</div>
+        <div class="kpi-lbl">Coincidencias</div>
+        <div class="kpi-sub neu">→ Para vos</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">📋</div>
+        <div class="kpi-val">1</div>
+        <div class="kpi-lbl">Reserva activa</div>
+        <div class="kpi-sub up">✔ Confirmada</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">❤️</div>
+        <div class="kpi-val">0</div>
+        <div class="kpi-lbl">Favoritos</div>
+        <div class="kpi-sub neu">→ Guardá opciones</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon">⭐</div>
+        <div class="kpi-val">0</div>
+        <div class="kpi-lbl">Reseñas escritas</div>
+        <div class="kpi-sub" style="color:var(--yellow);">Próximamente</div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div id="explorar" style="scroll-margin-top:70px;">
+      <div class="sec-hd anim3">
+        <div>
+          <div class="sec-title">Alojamientos para <em id="dest-label" style="font-style:italic;color:var(--guest)">vos</em></div>
+        </div>
+        <a class="sec-link" href="#">Ver todos →</a>
+      </div>
+      <div class="filter-bar anim3">
+        <span class="fb-label">Filtrar:</span>
+        <button class="f-chip on" onclick="toggleChip(this)">Todos</button>
+        <button class="f-chip" onclick="toggleChip(this)">🏢 Depto</button>
+        <button class="f-chip" onclick="toggleChip(this)">🏡 Casa</button>
+        <button class="f-chip" onclick="toggleChip(this)">🌲 Cabaña</button>
+        <button class="f-chip" onclick="toggleChip(this)">⭐ +4.8</button>
+        <button class="f-chip" onclick="toggleChip(this)" id="budget-chip">💲 Tu presupuesto</button>
+      </div>
+    </div>
+
+    <!-- PROPS GRID -->
+    <div class="props-grid anim3" id="props-grid">
+      <div class="prop-card">
+        <div class="pc-img img-a"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">98% match</div>🏡</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc1">Buenos Aires · Palermo</div>
+          <div class="pc-name">Departamento con terraza y luz natural</div>
+          <div class="pc-feats"><span class="pc-feat">WiFi</span><span class="pc-feat">Aire AC</span><span class="pc-feat">2 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$75</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n">(38)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="pc-img img-b"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">95% match</div>🌿</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc2">Tigre · Delta</div>
+          <div class="pc-name">Casa en el Delta con jardín privado</div>
+          <div class="pc-feats"><span class="pc-feat">Piscina</span><span class="pc-feat">Parrilla</span><span class="pc-feat">3 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$95</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n">(21)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="pc-img img-c"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">91% match</div>🏙️</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc3">Buenos Aires · San Telmo</div>
+          <div class="pc-name">Loft histórico en el corazón porteño</div>
+          <div class="pc-feats"><span class="pc-feat">WiFi</span><span class="pc-feat">Cocina</span><span class="pc-feat">1 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$60</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n" style="color:#E8C14B;">★</span><span class="star-n">(57)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="pc-img img-d"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">88% match</div>🍷</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc4">Mendoza · Luján de Cuyo</div>
+          <div class="pc-name">Villa con vista a los viñedos</div>
+          <div class="pc-feats"><span class="pc-feat">Vista</span><span class="pc-feat">Desayuno</span><span class="pc-feat">2 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$110</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n">(14)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="pc-img img-e"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">85% match</div>⛰️</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc5">Bariloche · Centro</div>
+          <div class="pc-name">Cabaña de montaña con chimenea</div>
+          <div class="pc-feats"><span class="pc-feat">Chimenea</span><span class="pc-feat">Ski</span><span class="pc-feat">2 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$85</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n">(29)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="prop-card">
+        <div class="pc-img img-f"><button class="pc-fav" onclick="toggleFav(this)">🤍</button><div class="pc-match">82% match</div>🌊</div>
+        <div class="pc-body">
+          <div class="pc-loc" id="loc6">Mar del Plata · Playa Grande</div>
+          <div class="pc-name">Apartamento frente al mar</div>
+          <div class="pc-feats"><span class="pc-feat">Vista mar</span><span class="pc-feat">Playa</span><span class="pc-feat">1 hab</span></div>
+          <div class="pc-foot">
+            <div><span class="pc-price">$70</span><span class="pc-night"> USD/noche</span></div>
+            <div class="pc-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star-n" style="color:#E8C14B;">★</span><span class="star-n">(44)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLS: RESERVAS + ACTIVIDAD -->
+    <div class="two-col" id="reservas" style="scroll-margin-top:70px;">
+      <div class="card-box">
+        <div class="card-box-head">
+          <span class="cbh-title">Mis reservas</span>
+          <span class="cbh-link">Ver todas →</span>
+        </div>
+        <div class="reserva-item">
+          <div class="ri-img img-b" style="background:linear-gradient(135deg,#3B8C6E,#1F5A42);">🌿</div>
+          <div class="ri-info">
+            <div class="ri-name">Casa en el Delta</div>
+            <div class="ri-date">📅 20–25 de Agosto</div>
+          </div>
+          <span class="pill pill-g">Confirmada</span>
+        </div>
+        <div class="reserva-item">
+          <div class="ri-img" style="background:linear-gradient(135deg,#5B7EC9,#2E4E8E);">🏙️</div>
+          <div class="ri-info">
+            <div class="ri-name">Loft San Telmo</div>
+            <div class="ri-date">📅 5–8 de Octubre</div>
+          </div>
+          <span class="pill pill-y">Pendiente</span>
+        </div>
+        <div class="reserva-item">
+          <div class="ri-img img-e" style="background:linear-gradient(135deg,#9E7B3A,#6B5020);">⛰️</div>
+          <div class="ri-info">
+            <div class="ri-name">Cabaña Bariloche</div>
+            <div class="ri-date">📅 Diciembre 2024</div>
+          </div>
+          <span class="pill pill-b">Completada</span>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <div class="card-box-head">
+          <span class="cbh-title">Actividad reciente</span>
+          <span class="cbh-link">Ver todo →</span>
+        </div>
+        <div class="act-item">
+          <div class="act-dot green">✅</div>
+          <div>
+            <div class="act-text">Tu reserva en <strong>Casa del Delta</strong> fue confirmada por el anfitrión.</div>
+            <div class="act-time">Hace 2 horas</div>
+          </div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot blue">🔍</div>
+          <div>
+            <div class="act-text">Encontramos <strong>24 alojamientos</strong> que coinciden con tus preferencias.</div>
+            <div class="act-time">Hace 5 minutos</div>
+          </div>
+        </div>
+        <div class="act-item">
+          <div class="act-dot yellow">💡</div>
+          <div>
+            <div class="act-text">Nuevo alojamiento disponible en <strong id="act-dest">tu destino</strong> dentro de tu presupuesto.</div>
+            <div class="act-time">Hace 1 día</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// Load user data from localStorage
+const raw = localStorage.getItem('nidoUser');
+const user = raw ? JSON.parse(raw) : { name: 'Viajero', dest: 'Buenos Aires', pax: 'Pareja', type: 'Departamento', budget: 80 };
+
+// Set name
+document.getElementById('sb-name').textContent = user.name || 'Viajero';
+document.getElementById('tb-name').textContent = user.name || 'viajero';
+
+// Welcome banner tags
+const tags = document.getElementById('wb-tags');
+if(user.dest) tags.innerHTML += `<span class="wb-tag">📍 ${user.dest}</span>`;
+if(user.pax) tags.innerHTML += `<span class="wb-tag">👥 ${user.pax}</span>`;
+if(user.type && user.type !== 'Cualquiera') tags.innerHTML += `<span class="wb-tag">🏠 ${user.type}</span>`;
+if(user.budget) tags.innerHTML += `<span class="wb-tag">💲 Hasta $${user.budget} USD</span>`;
+
+// Dest label
+const destLabel = document.getElementById('dest-label');
+destLabel.textContent = user.dest || 'Argentina';
+
+// Budget chip
+document.getElementById('budget-chip').textContent = `💲 Hasta $${user.budget || 80} USD`;
+
+// Activity dest
+document.getElementById('act-dest').textContent = user.dest || 'tu destino';
+
+// Update locations based on dest
+if(user.dest && user.dest !== 'Buenos Aires'){
+  document.getElementById('loc1').textContent = user.dest + ' · Centro';
+  document.getElementById('loc2').textContent = user.dest + ' · Norte';
+  document.getElementById('loc3').textContent = user.dest + ' · Sur';
+}
+
+// KPI matches (simulate)
+const matches = user.budget ? Math.min(Math.floor(user.budget / 3), 40) : 24;
+document.getElementById('kpi-matches').textContent = matches;
+
+// Fav toggle
+function toggleFav(btn){
+  btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+}
+
+// Filter chips
+function toggleChip(el){
+  document.querySelectorAll('.f-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>
